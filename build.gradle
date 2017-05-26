@@ -1,0 +1,39 @@
+buildscript {
+  ext {
+    baseImage = "rhel7"
+    grailsVersion = ""
+    dockerFile=project.file("docker/Dockerfile")
+    // must be a closure.  If set to =false then it thinks the proeprty does not exist
+    hasJar={false}
+
+    dockerStatementsOverride = {
+       [
+          "FROM rhel7:latest",
+          "MAINTAINER RadiantBlue Technologies radiantblue.com",
+          "RUN yum -y install https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm java-1.8.0-openjdk haveged unzip wget && yum clean all",
+          "ADD epel.repo /etc/yum.repos.d/epel.repo",
+          "ADD ossim-${project.ext.yumTag}.repo /etc/yum.repos.d/ossim.repo"
+          "ADD rhel.repo /etc/yum.repos.d/rhel.repo"
+       ]
+     }
+    if(System.env.OMAR_COMMON_PROPERTIES)
+    {
+      apply from: System.env.OMAR_COMMON_PROPERTIES
+    }
+  }
+  repositories {
+    mavenLocal()
+    maven { url "${ossimMavenProxy}" }
+  }
+  dependencies {
+        classpath 'com.bmuschko:gradle-docker-plugin:3.0.6'
+        classpath 'com.github.skhatri:gradle-s3-plugin:1.0.4'
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
+  }
+}
+
+apply plugin: "eclipse"
+apply plugin: "idea"
+apply plugin: "maven-publish"
+apply plugin: "maven"
+
