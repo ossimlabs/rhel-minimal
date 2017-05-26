@@ -1,16 +1,3 @@
-node(""){
-   stage("Checkout"){
-
-   }
-   stage("Download Container"){
-      sh "docker pull registry.access.redhat.com/rhel7/rhel"
-   }
-
-
-}
-
-
-
 //==================================================================================================
 // This is the Jenkins pipeline script for building the OMAR WMS application.
 // Environment varialbes that MUST be passed in by Jenkins:
@@ -26,9 +13,8 @@ node(""){
 // TODO: get to run on any node
 node(""){
     def workspaceDir = pwd()
-    def appName = "omar-rhel-base"
+    def appName = "rhel-minimal"
     def omarCommonProjName = "omar-common"
-    def rhelRegistry="registry.access.redhat.com/rhel7/rhel"
     env.OMAR_COMMON_PROPERTIES="${workspaceDir}/${omarCommonProjName}/omar-common-properties.gradle"
 
     stage("Checkout"){
@@ -50,10 +36,6 @@ node(""){
     }
 
     try {
-      stage("Download Container"){
-         sh "docker pull ${rhelRegistry}"
-         sh "docker tag ${rhelRegistry} rhel7"
-      }
       stage ("Publish Docker App") 
       {      
         withCredentials([[$class: 'UsernamePasswordMultiBinding', 
