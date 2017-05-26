@@ -1,1 +1,1 @@
-# omar-rhel-base
+# rhel-minimal
