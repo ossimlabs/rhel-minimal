@@ -8,8 +8,7 @@ buildscript {
 
     dockerStatementsOverride = {
        [
-          "FROM registry.access.redhat.com/rhel7/rhel:7.3",
-          "MAINTAINER RadiantBlue Technologies radiantblue.com",
+          "FROM registry.access.redhat.com/rhel7/rhel:7.3"
        ]
      }
     if(System.env.OMAR_COMMON_PROPERTIES)
