@@ -13,7 +13,7 @@
 // TODO: get to run on any node
 def notifyObj
 node(""){
-    agents any
+    agent any
     def workspaceDir = pwd()
     def appName = "rhel-minimal"
     def omarCommonProjName = "omar-common"
