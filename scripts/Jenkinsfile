@@ -9,9 +9,6 @@
 //    OPENSHIFT_USERNAME: The user to use logging into the docker registry
 //    OPENSHIFT_PASSWORD: The password to use logging into the docker registry
 //==================================================================================================
-
-// TODO: get to run on any node
-def notifyObj
 node("omar-build"){
     def workspaceDir = pwd()
     def appName = "rhel-minimal"
@@ -20,11 +17,11 @@ node("omar-build"){
 
     stage("Checkout"){
         dir(appName) {
-            git branch: "${OSSIM_GIT_BRANCH}", url: "https://github.com/ossimlabs/${appName}.git"
+            git branch: "${OSSIM_GIT_BRANCH}", url: "${GIT_PUBLIC_SERVER_URL}/${appName}.git"
         }
 
         dir(omarCommonProjName) {
-            git branch: "${OSSIM_GIT_BRANCH}", url: "https://github.com/ossimlabs/${omarCommonProjName}.git"
+            git branch: "${OSSIM_GIT_BRANCH}", url: "${GIT_PUBLIC_SERVER_URL}/${omarCommonProjName}.git"
         }
 
         // Set the environment variable for the gradle build
@@ -36,7 +33,6 @@ node("omar-build"){
                filter: "ossim-ci-${OSSIM_GIT_BRANCH}.tgz",
                flatten: true])
         sh "tar xvfz ossim-ci-${OSSIM_GIT_BRANCH}.tgz"
-        notifyObj = load "${env.WORKSPACE}/ossim-ci/jenkins/pipeline/notify.groovy"
     }
 
     try {
@@ -51,7 +47,7 @@ node("omar-build"){
             sh """
             pushd ${workspaceDir}/${appName}/
             aws s3 sync s3://o2-delivery/${OSSIM_GIT_BRANCH}/yum.repos.d ./docker/yum.repos.d
-            ./gradlew ${GRADLE_TASK}
+            gradle ${GRADLE_TASK}
             popd
             """
         }
@@ -60,7 +56,6 @@ node("omar-build"){
     catch(e){
         echo e.toString()
         currentBuild.result = "FAILED"
-        notifyObj?.notifyFailed()
     }
   stage("Clean Workspace")
   {
