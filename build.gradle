@@ -1,34 +1,19 @@
 buildscript {
-  ext {
-    baseImage = "rhel7"
-    grailsVersion = ""
-    dockerFile=project.file("docker/Dockerfile")
-    // must be a closure.  If set to =false then it thinks the proeprty does not exist
-    hasJar={false}
-
-    dockerStatementsOverride = {
-       [
-          "FROM registry.access.redhat.com/rhel7/rhel:7.5"
-       ]
-     }
-    if(System.env.OMAR_COMMON_PROPERTIES)
-    {
-      apply from: System.env.OMAR_COMMON_PROPERTIES
-    }
-  }
   repositories {
     mavenLocal()
-    maven { url "${ossimMavenProxy}" }
+    maven { url ossimMavenProxy }
   }
   dependencies {
-        classpath 'com.bmuschko:gradle-docker-plugin:3.0.6'
-        classpath 'com.github.skhatri:gradle-s3-plugin:1.0.4'
-        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
+    classpath 'com.bmuschko:gradle-docker-plugin:3.0.12'
+    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
+    classpath 'io.ossim:gradleDefaults:1.5-SNAPSHOT'
   }
 }
 
 apply plugin: "eclipse"
 apply plugin: "idea"
 apply plugin: "maven-publish"
-apply plugin: "maven"
 
+io.ossim.gradleDefaults.Variables.setAdditionalVariables(project)
+dockerBuildDir="${rootProject.projectDir}"
+io.ossim.gradleDefaults.Docker.addDockerTasks(project, dockerRegistryUrl, dockerRegistryUsername, dockerRegistryPassword, name, dockerImageTag, dockerBuildDir, null, ["BASE_IMAGE": dockerBaseImage])
