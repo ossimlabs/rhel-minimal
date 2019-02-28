@@ -5,14 +5,9 @@ buildscript {
   }
   dependencies {
     classpath 'com.bmuschko:gradle-docker-plugin:3.0.12'
-    classpath "org.jfrog.buildinfo:build-info-extractor-gradle:latest.release"
     classpath 'io.ossim:gradleDefaults:1.6-SNAPSHOT'
   }
 }
-
-apply plugin: "eclipse"
-apply plugin: "idea"
-apply plugin: "maven-publish"
 
 io.ossim.gradleDefaults.Variables.setAdditionalVariables(project)
 dockerBuildDir="${rootProject.projectDir}"
